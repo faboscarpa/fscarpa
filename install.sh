@@ -42,14 +42,14 @@ detect_os_arch() {
 }
 
 get_latest_release() {
-    local api_url="https://api.github.com/repos/faboscarpa/fscarpa/releases/latest"
+    local api_url="https://api.github.com/repos/faboscarpa/fscarpa/tags"
     
     if command -v curl >/dev/null 2>&1; then
-        curl -s "$api_url" 2>/dev/null | grep -o '"tag_name":"[^"]*"' | head -1 | cut -d'"' -f4 || echo "v1.0.0"
+        curl -s "$api_url" 2>/dev/null | grep -o '"name": *"[^"]*"' | head -1 | sed 's/"name": *"//;s/"//' || echo "v1.1.0"
     elif command -v wget >/dev/null 2>&1; then
-        wget -qO- "$api_url" 2>/dev/null | grep -o '"tag_name":"[^"]*"' | head -1 | cut -d'"' -f4 || echo "v1.0.0"
+        wget -qO- "$api_url" 2>/dev/null | grep -o '"name": *"[^"]*"' | head -1 | sed 's/"name": *"//;s/"//' || echo "v1.1.0"
     else
-        echo "v1.0.0"
+        echo "v1.1.0"
     fi
 }
 
