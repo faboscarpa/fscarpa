@@ -71,22 +71,28 @@ download_binary() {
     local download_url="https://raw.githubusercontent.com/faboscarpa/fscarpa/${version}/releases/${version}/${filename}"
     local temp_file="/tmp/${filename}"
     
-    echo -e "${GREEN}Descargando ${filename}...${NC}"
+    echo -e "${GREEN}Descargando ${filename}...${NC}" >&2
     
     if command -v curl >/dev/null 2>&1; then
         if ! curl -fL "$download_url" -o "$temp_file"; then
-            echo -e "${RED}Error al descargar el binario${NC}"
-            echo "URL: $download_url"
+            echo -e "${RED}Error al descargar el binario${NC}" >&2
+            echo "URL: $download_url" >&2
             return 1
         fi
     elif command -v wget >/dev/null 2>&1; then
         if ! wget -q "$download_url" -O "$temp_file"; then
-            echo -e "${RED}Error al descargar el binario${NC}"
-            echo "URL: $download_url"
+            echo -e "${RED}Error al descargar el binario${NC}" >&2
+            echo "URL: $download_url" >&2
             return 1
         fi
     else
-        echo -e "${RED}Error: Se requiere curl o wget para descargar el binario${NC}"
+        echo -e "${RED}Error: Se requiere curl o wget para descargar el binario${NC}" >&2
+        return 1
+    fi
+    
+    # Verificar que el archivo se descargó correctamente
+    if [ ! -f "$temp_file" ] || [ ! -s "$temp_file" ]; then
+        echo -e "${RED}Error: El archivo descargado está vacío o no existe${NC}" >&2
         return 1
     fi
     
@@ -171,7 +177,7 @@ main() {
     temp_file=$(download_binary "$platform" "$version")
     local download_result=$?
     
-    echo "Debug: temp_file=$temp_file, download_result=$download_result"
+# Debug eliminado para versión final
     
     if [ $download_result -eq 0 ] && [ -f "$temp_file" ]; then
         install_binary "$temp_file"
@@ -179,7 +185,7 @@ main() {
         verify_installation
     else
         echo -e "${RED}Error durante la instalación${NC}"
-        echo "Debug: download_result=$download_result, file_exists=$([ -f "$temp_file" ] && echo "yes" || echo "no")"
+# Debug eliminado para versión final
         exit 1
     fi
 }
