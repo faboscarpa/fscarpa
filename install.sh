@@ -169,13 +169,17 @@ main() {
     
     local temp_file
     temp_file=$(download_binary "$platform" "$version")
+    local download_result=$?
     
-    if [ $? -eq 0 ] && [ -f "$temp_file" ]; then
+    echo "Debug: temp_file=$temp_file, download_result=$download_result"
+    
+    if [ $download_result -eq 0 ] && [ -f "$temp_file" ]; then
         install_binary "$temp_file"
         add_to_path
         verify_installation
     else
         echo -e "${RED}Error durante la instalación${NC}"
+        echo "Debug: download_result=$download_result, file_exists=$([ -f "$temp_file" ] && echo "yes" || echo "no")"
         exit 1
     fi
 }
